@@ -1,3 +1,4 @@
 *.pyc
 ref/*.bt2
 ref/*.fai
+covid_spike_classification.egg-info/*
