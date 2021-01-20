@@ -70,7 +70,7 @@ def map_reads(reference, tmpdir, quiet=False):
         subprocess.check_call(sam_idx_cmd, stderr=stderr)
 
 
-def check_variants(reference, tmpdir, outfile, _quiet=False):
+def check_variants(reference, tmpdir, outfile, debug=False):
     bam_dir = os.path.join(tmpdir, "bams")
 
     for bam_file in sorted(glob.glob(os.path.join(bam_dir, "*.bam"))):
@@ -90,6 +90,11 @@ def check_variants(reference, tmpdir, outfile, _quiet=False):
                 parts.append("NA")
             except BaseDeletedError:
                 parts.append("0")
+            except:
+                if debug:
+                    shutil.copy2(bam_file, "keep")
+                    print(bam_file, variant)
+                raise
         print(*parts, sep=",", file=outfile)
 
 

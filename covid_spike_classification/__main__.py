@@ -24,13 +24,15 @@ def main():
                         help="File to write result CSV to (default: stdout).")
     parser.add_argument("-q", "--quiet", action="store_true", default=False,
                         help="Suppress noisy output from the tools run")
+    parser.add_argument("-d", "--debug", action="store_true", default=False,
+                        help="Debug mode: Keep bam file around when the parsing crashes")
     args = parser.parse_args()
 
     with tempfile.TemporaryDirectory() as tmpdir:
         basecall(args.datadir, tmpdir, args.quiet)
         map_reads(args.reference, tmpdir, args.quiet)
         print("sample", *REGIONS.keys(), sep=",", file=args.outfile)
-        check_variants(args.reference, tmpdir, args.outfile, args.quiet)
+        check_variants(args.reference, tmpdir, args.outfile, args.debug)
 
 
 if __name__ == "__main__":
