@@ -1,0 +1,9 @@
+channels:
+  - conda-forge
+  - bioconda
+  - defaults
+dependencies:
+  - biopython=1.78=py38h497a2fe_1
+  - bowtie2=2.4.2=py38h1c8e9b9_1
+  - samtools=1.11=h6270b1f_0
+  - tracy=0.5.3=0
