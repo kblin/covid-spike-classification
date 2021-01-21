@@ -85,7 +85,10 @@ def check_variants(tmpdir, config):
                 elif after == variant[-1]:
                     parts.append("y")
                 else:
-                    parts.append(f"{before}{variant[1:-1]}{after}")
+                    if config.show_unexpected:
+                        parts.append(f"{before}{variant[1:-1]}{after}")
+                    else:
+                        parts.append("n")
             except PileupFailedError:
                 parts.append("NA")
             except BaseDeletedError:

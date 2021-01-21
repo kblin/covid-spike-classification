@@ -6,6 +6,7 @@ class CSCConfig:
         'reference',
         'outfile',
         'quiet',
+        'show_unexpected',
         'debug',
     )
 

@@ -28,6 +28,8 @@ def main():
                         help="Suppress noisy output from the tools run")
     parser.add_argument("-d", "--debug", action="store_true", default=False,
                         help="Debug mode: Keep bam file around when the parsing crashes")
+    parser.add_argument("--show-unexpected", action="store_true", default=False,
+                        help="Show unexpected mutations instead of reporting 'no known mutation'")
     args = parser.parse_args()
 
     config = CSCConfig.from_args(args)
