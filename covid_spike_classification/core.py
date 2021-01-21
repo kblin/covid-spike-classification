@@ -40,6 +40,8 @@ def basecall(tmpdir, config):
             kwargs["stderr"] = subprocess.DEVNULL
         subprocess.check_call(cmd, **kwargs)
 
+    shutil.copytree(fastq_dir, config.outdir, dirs_exist_ok=True)
+
 
 def map_reads(tmpdir, config):
     fastq_dir = os.path.join(tmpdir, "fastqs")
@@ -72,7 +74,9 @@ def map_reads(tmpdir, config):
 
 def check_variants(tmpdir, config):
     bam_dir = os.path.join(tmpdir, "bams")
+    outfile = open(os.path.join(config.outdir, "results.csv"), "w")
 
+    print("sample", *REGIONS.keys(), sep=",", file=outfile)
     for bam_file in sorted(glob.glob(os.path.join(bam_dir, "*.bam"))):
         base_name = os.path.basename(bam_file)
         sample_id = base_name.split(".")[0]
@@ -98,7 +102,9 @@ def check_variants(tmpdir, config):
                     shutil.copy2(bam_file, "keep")
                     print(bam_file, variant)
                 raise
-        print(*parts, sep=",", file=config.outfile)
+        print(*parts, sep=",", file=outfile)
+
+    outfile.close()
 
 
 def call_variant(reference, bam_file, region):

@@ -4,7 +4,7 @@ class CSCConfig:
     __slots__ = (
         'datadir',
         'reference',
-        'outfile',
+        'outdir',
         'quiet',
         'show_unexpected',
         'debug',
