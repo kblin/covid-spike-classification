@@ -122,7 +122,8 @@ def parse_pileup(pileup):
     quality = []
     for line in lines[:3]:
         parts = line.split("\t")
-        assert len(parts) == 6
+        if len(parts) < 6:
+            raise PileupFailedError()
 
         before += parts[2]
         after += parts[4][0] if parts[4][0] != "." else parts[2]
