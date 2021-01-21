@@ -27,33 +27,33 @@ class BaseDeletedError(RuntimeError):
     pass
 
 
-def basecall(datadir, tmpdir, quiet=False):
+def basecall(tmpdir, config):
     fastq_dir = os.path.join(tmpdir, "fastqs")
     os.makedirs(fastq_dir)
 
-    for sanger_file in glob.glob(os.path.join(datadir, "*.ab1")):
+    for sanger_file in glob.glob(os.path.join(config.datadir, "*.ab1")):
         base_name = os.path.basename(sanger_file)
         cmd = ["tracy", "basecall", "-f", "fastq", "-o", os.path.join(fastq_dir, f"{base_name}.fastq"), sanger_file]
         kwargs = {}
-        if quiet:
+        if config.quiet:
             kwargs["stdout"] = subprocess.DEVNULL
             kwargs["stderr"] = subprocess.DEVNULL
         subprocess.check_call(cmd, **kwargs)
 
 
-def map_reads(reference, tmpdir, quiet=False):
+def map_reads(tmpdir, config):
     fastq_dir = os.path.join(tmpdir, "fastqs")
     bam_dir = os.path.join(tmpdir, "bams")
     os.makedirs(bam_dir)
 
     # ditch the .fasta file ending
-    name, _ = os.path.splitext(reference)
+    name, _ = os.path.splitext(config.reference)
     ref = f"{name}.index"
 
     sam_view_cmd = ["samtools", "view", "-Sb", "-"]
     sam_sort_cmd = ["samtools", "sort", "-"]
 
-    stderr = subprocess.DEVNULL if quiet else None
+    stderr = subprocess.DEVNULL if config.quiet else None
 
     for fastq_file in glob.glob(os.path.join(fastq_dir, "*.fastq")):
         base_name = os.path.basename(fastq_file)
@@ -70,7 +70,7 @@ def map_reads(reference, tmpdir, quiet=False):
         subprocess.check_call(sam_idx_cmd, stderr=stderr)
 
 
-def check_variants(reference, tmpdir, outfile, debug=False):
+def check_variants(tmpdir, config):
     bam_dir = os.path.join(tmpdir, "bams")
 
     for bam_file in sorted(glob.glob(os.path.join(bam_dir, "*.bam"))):
@@ -79,7 +79,7 @@ def check_variants(reference, tmpdir, outfile, debug=False):
         parts = [sample_id]
         for variant, region in REGIONS.items():
             try:
-                before, after, quality = call_variant(reference, bam_file, region)
+                before, after, quality = call_variant(config.reference, bam_file, region)
                 if before == after:
                     parts.append("n")
                 elif after == variant[-1]:
@@ -91,11 +91,11 @@ def check_variants(reference, tmpdir, outfile, debug=False):
             except BaseDeletedError:
                 parts.append("0")
             except:
-                if debug:
+                if config.debug:
                     shutil.copy2(bam_file, "keep")
                     print(bam_file, variant)
                 raise
-        print(*parts, sep=",", file=outfile)
+        print(*parts, sep=",", file=config.outfile)
 
 
 def call_variant(reference, bam_file, region):

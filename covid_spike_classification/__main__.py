@@ -5,6 +5,8 @@ import os
 import sys
 import tempfile
 
+from .config import CSCConfig
+
 from .core import (
     REGIONS,
     basecall,
@@ -28,11 +30,13 @@ def main():
                         help="Debug mode: Keep bam file around when the parsing crashes")
     args = parser.parse_args()
 
+    config = CSCConfig.from_args(args)
+
     with tempfile.TemporaryDirectory() as tmpdir:
-        basecall(args.datadir, tmpdir, args.quiet)
-        map_reads(args.reference, tmpdir, args.quiet)
+        basecall(tmpdir, config)
+        map_reads(tmpdir, config)
         print("sample", *REGIONS.keys(), sep=",", file=args.outfile)
-        check_variants(args.reference, tmpdir, args.outfile, args.debug)
+        check_variants(tmpdir, config)
 
 
 if __name__ == "__main__":
