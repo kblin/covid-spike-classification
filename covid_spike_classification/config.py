@@ -8,6 +8,7 @@ class CSCConfig:
         'quiet',
         'show_unexpected',
         'debug',
+        'zip_results',
     )
 
     def __init__(self, **kwargs):

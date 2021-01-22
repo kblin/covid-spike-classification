@@ -3,6 +3,7 @@
 import argparse
 import datetime
 import os
+import shutil
 import sys
 import tempfile
 
@@ -31,6 +32,8 @@ def main():
                         help="Debug mode: Keep bam file around when the parsing crashes")
     parser.add_argument("--show-unexpected", action="store_true", default=False,
                         help="Show unexpected mutations instead of reporting 'no known mutation'")
+    parser.add_argument("-z", "--zip-results", action="store_true", default=False,
+                        help="Create a zipfile from the output directory instead of the output directory.")
     args = parser.parse_args()
 
     config = CSCConfig.from_args(args)
@@ -41,6 +44,9 @@ def main():
         basecall(tmpdir, config)
         map_reads(tmpdir, config)
         check_variants(tmpdir, config)
+        if config.zip_results:
+            shutil.make_archive(config.outdir, "zip", root_dir=config.outdir)
+            shutil.rmtree(config.outdir, ignore_errors=True)
 
 
 if __name__ == "__main__":
