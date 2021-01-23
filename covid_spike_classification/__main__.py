@@ -19,8 +19,8 @@ from .core import (
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("-D", "--datadir", default=os.path.join(os.getcwd(), "data"),
-                        help="Directory containing the ab1 files to call variants on (default: %(default)s).")
+    parser.add_argument("reads",
+                        help="A zip file or directory containing the ab1 files to call variants on.")
     parser.add_argument("-r", "--reference", default=os.path.join(os.getcwd(), "ref", "NC_045512.fasta"),
                         help="Reference FASTA file to use (default: %(default)s).")
     parser.add_argument("-o", "--outdir",

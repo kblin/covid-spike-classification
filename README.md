@@ -42,8 +42,14 @@ Assuming you used above instructions to install via conda, you can run the tool 
 
 ```sh
 conda activate csc
-covid-spike-classification --datadir /path/to/your/ab1/files --reference /path/to/your/reference.fasta -o /path/to/store/results.csv
+covid-spike-classification --reference /path/to/your/reference.fasta --outdir /path/to/result/dir /path/to/sanger/reads/dir_or.zip
 ```
+
+Notably, you can provide the input either as a ZIP file or as a directory, as long as they directly contain the ab1 files you want
+to run the analysis on.
+
+See also the `--help` output for more detailed usage information.
+
 
 ## License
 All code is available under the Apache License version 2, see the

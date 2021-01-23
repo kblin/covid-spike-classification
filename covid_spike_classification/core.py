@@ -5,6 +5,7 @@ import os
 import shutil
 import subprocess
 import sys
+import zipfile
 
 from Bio.Seq import Seq
 
@@ -31,7 +32,17 @@ def basecall(tmpdir, config):
     fastq_dir = os.path.join(tmpdir, "fastqs")
     os.makedirs(fastq_dir)
 
-    for sanger_file in glob.glob(os.path.join(config.datadir, "*.ab1")):
+    if os.path.isdir(config.reads):
+        ab1_dir = config.reads
+    else:
+        ab1_dir = os.path.join(tmpdir, "ab1s")
+        os.makedirs(ab1_dir)
+        with zipfile.ZipFile(config.reads) as sanger_zip:
+            ab1_files = [finfo for finfo in sanger_zip.infolist() if finfo.filename.endswith(".ab1")]
+            for sanger_file in ab1_files:
+                sanger_zip.extract(sanger_file, ab1_dir)
+
+    for sanger_file in glob.glob(os.path.join(ab1_dir, "*.ab1")):
         base_name = os.path.basename(sanger_file)
         cmd = ["tracy", "basecall", "-f", "fastq", "-o", os.path.join(fastq_dir, f"{base_name}.fastq"), sanger_file]
         kwargs = {}

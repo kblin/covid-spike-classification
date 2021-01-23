@@ -2,12 +2,12 @@
 
 class CSCConfig:
     __slots__ = (
-        'datadir',
-        'reference',
+        'debug',
         'outdir',
         'quiet',
+        'reads',
+        'reference',
         'show_unexpected',
-        'debug',
         'zip_results',
     )
 
