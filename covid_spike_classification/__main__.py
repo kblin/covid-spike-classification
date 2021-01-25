@@ -7,9 +7,9 @@ import shutil
 import sys
 import tempfile
 
-from .config import CSCConfig
+from covid_spike_classification.config import CSCConfig
 
-from .core import (
+from covid_spike_classification.core import (
     REGIONS,
     basecall,
     map_reads,
@@ -44,6 +44,8 @@ def main():
         basecall(tmpdir, config)
         map_reads(tmpdir, config)
         check_variants(tmpdir, config)
+        outfile = open(os.path.join(config.outdir, "results.csv"), "r")
+        print(outfile.read())
         if config.zip_results:
             shutil.make_archive(config.outdir, "zip", root_dir=config.outdir)
             shutil.rmtree(config.outdir, ignore_errors=True)

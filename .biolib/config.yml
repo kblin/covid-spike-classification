@@ -1,0 +1,33 @@
+biolib_version: 1
+modules:
+    main:
+        executor: 'bl-python3:*'
+        path: covid_spike_classification/__main__.py
+    samtools: 'samtools/samtools:0.0.40'
+arguments:
+    -
+        default_value: ''
+        description: A zip file containing the ab1 files to call variants on.
+        key: ''
+        key_value_separator: ' '
+        required: true
+        type: file
+    -
+        default_value: ref/NC_045512.fasta
+        description: 'Reference FASTA file to use:'
+        key: '--reference'
+        key_value_separator: ' '
+        required: false
+        type: file
+    -
+        default_value: ''
+        description: >-
+            Create a zipfile from the output directory instead of the output
+            directory.
+        key: ''
+        key_value_separator: ' '
+        required: false
+        type: toggle
+        options:
+            'off': ''
+            'on': '--zip-results'
