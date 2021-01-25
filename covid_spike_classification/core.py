@@ -96,18 +96,18 @@ def check_variants(tmpdir, config):
             try:
                 before, after, quality = call_variant(config.reference, bam_file, region)
                 if before == after:
-                    parts.append("n")
+                    parts.append("0")
                 elif after == variant[-1]:
-                    parts.append("y")
+                    parts.append("1")
                 else:
                     if config.show_unexpected:
                         parts.append(f"{before}{variant[1:-1]}{after}")
                     else:
-                        parts.append("n")
+                        parts.append("0")
             except PileupFailedError:
                 parts.append("NA")
             except BaseDeletedError:
-                parts.append("0")
+                parts.append("NA")
             except:
                 if config.debug:
                     shutil.copy2(bam_file, "keep")
