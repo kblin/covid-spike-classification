@@ -28,6 +28,8 @@ def main():
                         help="File to write result CSV and fastq files to (default: %(default)s).")
     parser.add_argument("-q", "--quiet", action="store_true", default=False,
                         help="Suppress noisy output from the tools run")
+    parser.add_argument("-s", "--stdout", action="store_true", default=False,
+                        help="Print results to stdout in addition to writing them to disk")
     parser.add_argument("-d", "--debug", action="store_true", default=False,
                         help="Debug mode: Keep bam file around when the parsing crashes")
     parser.add_argument("--show-unexpected", action="store_true", default=False,
@@ -47,7 +49,9 @@ def main():
         if config.zip_results:
             shutil.make_archive(config.outdir, "zip", root_dir=config.outdir)
             shutil.rmtree(config.outdir, ignore_errors=True)
-
+        if config.stdout:
+            outfile = open(os.path.join(config.outdir, "results.csv"), "r")
+            print(outfile.read())
 
 if __name__ == "__main__":
     main()
