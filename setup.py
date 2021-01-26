@@ -22,7 +22,7 @@ tests_require = [
 def read_version():
     for line in open(os.path.join('covid_spike_classification', '__init__.py'), 'r'):
         if line.startswith('__version__'):
-            return line.split('=')[-1].strip().strip("'")
+            return line.split('=')[-1].strip().strip('"')
 
 
 class PyTest(TestCommand):
