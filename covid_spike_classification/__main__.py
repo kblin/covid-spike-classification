@@ -46,12 +46,12 @@ def main():
         basecall(tmpdir, config)
         map_reads(tmpdir, config)
         check_variants(tmpdir, config)
-        if config.zip_results:
-            shutil.make_archive(config.outdir, "zip", root_dir=config.outdir)
-            shutil.rmtree(config.outdir, ignore_errors=True)
         if config.stdout:
             outfile = open(os.path.join(config.outdir, "results.csv"), "r")
             print(outfile.read())
+        if config.zip_results:
+            shutil.make_archive(config.outdir, "zip", root_dir=config.outdir)
+            shutil.rmtree(config.outdir, ignore_errors=True)
 
 if __name__ == "__main__":
     main()
