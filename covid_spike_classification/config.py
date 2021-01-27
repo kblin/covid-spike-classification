@@ -8,6 +8,7 @@ class CSCConfig:
         'reads',
         'reference',
         'show_unexpected',
+        'stdout',
         'zip_results',
     )
 
