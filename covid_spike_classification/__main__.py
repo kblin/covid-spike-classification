@@ -4,12 +4,12 @@ import argparse
 import datetime
 import os
 import shutil
-import sys
 import tempfile
+from js import BioLib
 
-from .config import CSCConfig
+from covid_spike_classification.config import CSCConfig
 
-from .core import (
+from covid_spike_classification.core import (
     REGIONS,
     basecall,
     map_reads,
@@ -44,6 +44,14 @@ def main():
 
     os.makedirs(args.outdir, exist_ok=True)
 
+    # Build indices
+    BioLib.call_task(
+        "bowtie2-build",
+        b'',
+        "/ref/NC_045512.fasta /ref/NC_045512.index",
+        ["/ref", "/wasm/bowtie2-build-s.wasm"],
+        True)
+
     with tempfile.TemporaryDirectory() as tmpdir:
         basecall(tmpdir, config)
         map_reads(tmpdir, config)
@@ -54,6 +62,7 @@ def main():
         if config.zip_results:
             shutil.make_archive(config.outdir, "zip", root_dir=config.outdir)
             shutil.rmtree(config.outdir, ignore_errors=True)
+
 
 if __name__ == "__main__":
     main()

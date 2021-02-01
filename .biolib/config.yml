@@ -1,0 +1,32 @@
+biolib_version: 1
+modules:
+    main:
+        executor: 'bl-python3:*'
+        path: covid_spike_classification/__main__.py
+    tracy:
+        executor: 'bl-emscripten:*'
+        path: wasm/tracy.wasm
+    samtools:
+        executor: 'bl-emscripten:*'
+        path: wasm/samtools.wasm
+    bowtie2:
+        executor: 'bl-emscripten:*'
+        path: wasm/bowtie2-align-s.wasm
+    bowtie2-build:
+        executor: 'bl-emscripten:*'
+        path: wasm/bowtie2-build-s.wasm
+arguments:
+    -
+        default_value: ''
+        description: 'A zip file containing the ab1 files to call variants on:'
+        key: ''
+        key_value_separator: ' '
+        required: true
+        type: file
+    -
+        default_value: ''
+        description: ''
+        key: '--stdout'
+        key_value_separator: ' '
+        required: true
+        type: hidden
