@@ -1,0 +1,32 @@
+name: ci
+
+on: push
+
+env:
+    # The location of your BioLib project in the format <account_handle>/<project_name>
+    BIOLIB_PROJECT_URI: ssi/covid-spike-classification
+
+jobs:
+    publish-to-biolib:
+        name: Publish new version to BioLib
+        runs-on: ubuntu-latest
+        # Only changes to the master branch should trigger a push to BioLib
+        if: github.ref == 'refs/heads/master'
+
+        steps:
+            -   name: Checkout
+                uses: actions/checkout@v2
+
+            -   name: Setup Python
+                uses: actions/setup-python@v2
+                with:
+                    python-version: 3.8
+
+            -   name: Install BioLib CLI
+                run: pip3 install pybiolib
+
+            -   name: Publish new version to BioLib
+                run: biolib push $BIOLIB_PROJECT_URI
+                env:
+                    BIOLIB_EMAIL: ${{ secrets.BIOLIB_EMAIL }}
+                    BIOLIB_PASSWORD: ${{ secrets.BIOLIB_PASSWORD }}
