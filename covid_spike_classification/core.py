@@ -4,8 +4,9 @@ import glob
 import os
 import shutil
 import subprocess
-import sys
 import zipfile
+from js import BioLib
+
 
 from Bio.Seq import Seq
 
@@ -58,6 +59,7 @@ class BaseDeletedError(RuntimeError):
 
 
 def basecall(tmpdir, config):
+    BioLib.set_execution_progress(5)
     fastq_dir = os.path.join(tmpdir, "fastqs")
     os.makedirs(fastq_dir)
 
@@ -71,16 +73,29 @@ def basecall(tmpdir, config):
             for sanger_file in ab1_files:
                 sanger_zip.extract(sanger_file, ab1_dir)
 
-    for sanger_file in glob.glob(os.path.join(ab1_dir, "*.ab1")):
+    sanger_files = glob.glob(os.path.join(ab1_dir, "*.ab1"))
+    sanger_files_len = len(sanger_files)
+    for idx, sanger_file in enumerate(sanger_files):
+        BioLib.set_execution_progress(5 + (10 * (idx / sanger_files_len)))
         base_name = os.path.basename(sanger_file)
-        cmd = ["tracy", "basecall", "-f", "fastq", "-o", os.path.join(fastq_dir, f"{base_name}.fastq"), sanger_file]
+        fastq_file = os.path.join(fastq_dir, f"{base_name}.fastq")
+        print("", file=open(fastq_file, 'w'))
+
+        cmd = ["tracy", "basecall", "-f", "fastq", "-o", fastq_file, sanger_file]
         kwargs = {}
         if config.quiet:
             kwargs["stdout"] = subprocess.DEVNULL
             kwargs["stderr"] = subprocess.DEVNULL
-        subprocess.check_call(cmd, **kwargs)
+        result = BioLib.call_task(cmd[0], b'', cmd[1:], [sanger_file, '/wasm/tracy.wasm', fastq_file], True)
 
-    shutil.copytree(fastq_dir, config.outdir, dirs_exist_ok=True)
+    # copy all content of fastq_dir to config.outdir
+    for path in os.listdir(fastq_dir):
+        source_path = os.path.join(fastq_dir, path)
+        destination_path = os.path.join(config.outdir, path)
+        if os.path.isdir(source_path):
+            shutil.copytree(source_path, destination_path)
+        else:
+            shutil.copy2(source_path, destination_path)
 
 
 def map_reads(tmpdir, config):
@@ -91,25 +106,37 @@ def map_reads(tmpdir, config):
     # ditch the .fasta file ending
     name, _ = os.path.splitext(config.reference)
     ref = f"{name}.index"
-
-    sam_view_cmd = ["samtools", "view", "-Sb", "-"]
-    sam_sort_cmd = ["samtools", "sort", "-"]
-
     stderr = subprocess.DEVNULL if config.quiet else None
 
-    for fastq_file in glob.glob(os.path.join(fastq_dir, "*.fastq")):
+    fqs = glob.glob(os.path.join(fastq_dir, "*.fastq"))
+    fqs_length = len(fqs)
+
+    for idx, fastq_file in enumerate(fqs):
+        BioLib.set_execution_progress(15 + (25 * (idx / fqs_length)))
         base_name = os.path.basename(fastq_file)
         bam_file = os.path.join(bam_dir, f"{base_name}.bam")
+        bai_file = os.path.join(bam_dir, f"{base_name}.bam.bai")
+        sam_view_result_file = '/sam_view_result.bam'
+
+        # Create output files on disk
+        print("", file=open(sam_view_result_file, 'w'))
+        print("", file=open(bam_file, 'w'))
+        print("", file=open(bai_file, 'w'))
+
+        sam_view_cmd = ["samtools", "view", "-Sb", "-o", "sam_view_result.bam", "-"]
+        sam_sort_cmd = ["samtools", "sort", "-o", bam_file, "sam_view_result.bam"]
         bowtie_cmd = ["bowtie2", "-x", ref, "--very-sensitive-local", "-U", fastq_file, "--qc-filter"]
         sam_idx_cmd = ["samtools", "index", bam_file]
 
-        with open(bam_file, "w") as handle:
-            bowtie = subprocess.Popen(bowtie_cmd, stdout=subprocess.PIPE, stderr=stderr)
-            sam_view = subprocess.Popen(sam_view_cmd, stdin=bowtie.stdout, stdout=subprocess.PIPE, stderr=stderr)
-            sam_sort = subprocess.Popen(sam_sort_cmd, stdin=sam_view.stdout, stdout=handle, stderr=stderr)
-            sam_sort.wait()
 
-        subprocess.check_call(sam_idx_cmd, stderr=stderr)
+        bowtie = BioLib.call_task(bowtie_cmd[0], "", bowtie_cmd[1:],
+                                  ["/ref", fastq_file, '/wasm/bowtie2-align-s.wasm'], True)
+        sam_view = BioLib.call_task(sam_view_cmd[0], bytes(bowtie.stdout), sam_view_cmd[1:],
+                                    [sam_view_result_file, '/wasm/samtools.wasm'], True)
+        sam_sort = BioLib.call_task(sam_sort_cmd[0], "", sam_sort_cmd[1:],
+                                    [sam_view_result_file, bam_file, "/wasm/samtools.wasm"], True)
+        result = BioLib.call_task(sam_idx_cmd[0], "", sam_idx_cmd[1:],
+                                  [bam_file, "/wasm/samtools.wasm", bai_file], True)
 
 
 def check_variants(tmpdir, config):
@@ -122,7 +149,10 @@ def check_variants(tmpdir, config):
     columns.append("comment")
 
     print(*columns, sep=",", file=outfile)
-    for bam_file in sorted(glob.glob(os.path.join(bam_dir, "*.bam"))):
+    bams = sorted(glob.glob(os.path.join(bam_dir, "*.bam")))
+    bams_length = len(bams)
+    for idx, bam_file in enumerate(bams):
+        BioLib.set_execution_progress(40 + (60 * (idx/bams_length)))
         base_name = os.path.basename(bam_file)
         sample_id = base_name.split(".")[0]
         parts = [sample_id]
@@ -192,9 +222,9 @@ def name_variants(found_mutations):
 
 def call_variant(reference, bam_file, region):
     cmd = ["samtools", "mpileup", "-f", reference, "-r", region, bam_file]
-    mpileup = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.DEVNULL)
-    result = mpileup.communicate()[0].decode("utf-8")
-    before, after, quality = parse_pileup(result)
+    result = BioLib.call_task(cmd[0], b"", cmd[1:],
+                              [bam_file, reference, bam_file+'.bai', "/wasm/samtools.wasm"], True)
+    before, after, quality = parse_pileup(bytes(result.stdout).decode())
 
     if "*" in after:
         raise BaseDeletedError()
@@ -222,6 +252,3 @@ def parse_pileup(pileup):
         quality.append(ord(parts[5])-33)
 
     return before, after, quality
-
-
-
