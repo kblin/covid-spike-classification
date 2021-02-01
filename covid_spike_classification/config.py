@@ -3,11 +3,13 @@
 class CSCConfig:
     __slots__ = (
         'debug',
+        'name_variants',
         'outdir',
         'quiet',
         'reads',
         'reference',
         'show_unexpected',
+        'stdout',
         'zip_results',
     )
 

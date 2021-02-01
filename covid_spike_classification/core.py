@@ -10,13 +10,42 @@ import zipfile
 from Bio.Seq import Seq
 
 REGIONS = {
+    # The important ones the system asks for
     "N439K": "NC_045512:22877-22879",
     "Y453F": "NC_045512:22919-22921",
     "E484K": "NC_045512:23012-23014",
     "N501Y": "NC_045512:23063-23065",
     "P681H": "NC_045512:23603-23605",
+    # Bonus mutations to help call variants
+    "L452R": "NC_045512:22916-22918",
+    "S477N": "NC_045512:22991-22993",
+    "A570D": "NC_045512:23270-23272",
     "D614G": "NC_045512:23402-23404",
+    "A626S": "NC_045512:23438-23441",
     "H655Y": "NC_045512:23525-23527",
+    "I692V": "NC_045512:23636-23638",
+    "A701V": "NC_045512:23663-23665",
+    "T716I": "NC_045512:23708-23710",
+}
+
+
+KNOWN_VARIANTS = {
+    "B.1.1.7": {
+        "N501Y",
+        "A570D",
+        "P681H",
+        "T716I",
+    },
+    "B.1.351": {
+        "E484K",
+        "N501Y",
+        "A701V",
+    },
+    "P1": {
+        "E484K",
+        "N501Y",
+        "H655Y",
+    },
 }
 
 
@@ -87,35 +116,78 @@ def check_variants(tmpdir, config):
     bam_dir = os.path.join(tmpdir, "bams")
     outfile = open(os.path.join(config.outdir, "results.csv"), "w")
 
-    print("sample", *REGIONS.keys(), sep=",", file=outfile)
+    variants = REGIONS.keys()
+    columns = ["sample"]
+    columns.extend(variants)
+    columns.append("comment")
+
+    print(*columns, sep=",", file=outfile)
     for bam_file in sorted(glob.glob(os.path.join(bam_dir, "*.bam"))):
         base_name = os.path.basename(bam_file)
         sample_id = base_name.split(".")[0]
         parts = [sample_id]
-        for variant, region in REGIONS.items():
+        found_mutations = set()
+
+        for variant in variants:
+            region = REGIONS[variant]
             try:
                 before, after, quality = call_variant(config.reference, bam_file, region)
                 if before == after:
-                    parts.append("n")
+                    parts.append("0")
                 elif after == variant[-1]:
-                    parts.append("y")
+                    parts.append("1")
+                    found_mutations.add(variant)
                 else:
                     if config.show_unexpected:
                         parts.append(f"{before}{variant[1:-1]}{after}")
                     else:
-                        parts.append("n")
+                        parts.append("0")
             except PileupFailedError:
                 parts.append("NA")
             except BaseDeletedError:
-                parts.append("0")
+                parts.append("NA")
             except:
                 if config.debug:
                     shutil.copy2(bam_file, "keep")
                     print(bam_file, variant)
                 raise
+
+        comment = ""
+        if "D614G" not in found_mutations:
+            comment += "D614G not found; low quality sequence? "
+        if config.name_variants:
+            comment_parts = []
+            named_variants = name_variants(found_mutations)
+            for variant in named_variants.keys():
+                if named_variants[variant]:
+                    comment_parts.append(f"found {variant}")
+                else:
+                    comment_parts.append(f"possibly found {variant}")
+
+            comment += ";".join(comment_parts)
+        comment = comment.strip()
+        if not comment:
+            comment = "NA"
+
+        parts.append(comment)
+
         print(*parts, sep=",", file=outfile)
 
     outfile.close()
+
+
+def name_variants(found_mutations):
+    named_variants = {}
+    for known_variant, expected_changes in KNOWN_VARIANTS.items():
+        expected_mutations_not_found =  expected_changes.difference(found_mutations)
+        unexpected_mutations_found = found_mutations.difference(expected_changes).difference({"D614G"})
+        if len(expected_mutations_not_found) == 0 and len(unexpected_mutations_found) == 0:
+            named_variants[known_variant] = True
+        elif len(expected_mutations_not_found) <= 1 and len(unexpected_mutations_found) <= 1:
+            named_variants[known_variant] = False
+
+    return named_variants
+
 
 
 def call_variant(reference, bam_file, region):
