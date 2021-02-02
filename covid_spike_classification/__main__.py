@@ -23,6 +23,8 @@ def main():
                         help="A zip file or directory containing the ab1 files to call variants on.")
     parser.add_argument("-r", "--reference", default=os.path.join(os.getcwd(), "ref", "NC_045512.fasta"),
                         help="Reference FASTA file to use (default: %(default)s).")
+    parser.add_argument("-i", "--input-format", choices=["ab1", "fasta", "fastq"], default="ab1",
+                        help="Select which input format to expect. Choices: %(choices)s. default: %(default)s")
     parser.add_argument("-o", "--outdir",
                         default=datetime.datetime.now().strftime("%Y-%m-%d"),
                         help="File to write result CSV and fastq files to (default: %(default)s).")
@@ -34,7 +36,7 @@ def main():
                         help="Debug mode: Keep bam file around when the parsing crashes")
     parser.add_argument("--show-unexpected", action="store_true", default=False,
                         help="Show unexpected mutations instead of reporting 'no known mutation'")
-    parser.add_argument("-n", "--name-variants", action="store_true", default=False,
+    parser.add_argument("-n", "--name-variants", action="store_false", default=True,
                         help="Add a column naming known variants")
     parser.add_argument("-z", "--zip-results", action="store_true", default=False,
                         help="Create a zipfile from the output directory instead of the output directory.")

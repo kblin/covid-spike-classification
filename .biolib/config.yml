@@ -18,7 +18,7 @@ modules:
 arguments:
     -
         default_value: ''
-        description: 'A zip file containing the ab1 files to call variants on:'
+        description: 'A zip file containing the sequencing files to call variants on:'
         key: ''
         key_value_separator: ' '
         required: true
@@ -30,3 +30,14 @@ arguments:
         key_value_separator: ' '
         required: true
         type: hidden
+    -
+        default_value: ab1
+        description: 'Select which input format to expect:'
+        key: '--input-format'
+        key_value_separator: ' '
+        required: true
+        type: dropdown
+        options:
+            ab1: ab1
+            fasta: fasta
+            fastq: fastq

@@ -8,6 +8,8 @@ import zipfile
 from js import BioLib
 
 
+from .config import CSCConfig
+
 from Bio.Seq import Seq
 
 REGIONS = {
@@ -60,18 +62,12 @@ class BaseDeletedError(RuntimeError):
 
 def basecall(tmpdir, config):
     BioLib.set_execution_progress(5)
+    if config.input_format != "ab1":
+        return
     fastq_dir = os.path.join(tmpdir, "fastqs")
     os.makedirs(fastq_dir)
 
-    if os.path.isdir(config.reads):
-        ab1_dir = config.reads
-    else:
-        ab1_dir = os.path.join(tmpdir, "ab1s")
-        os.makedirs(ab1_dir)
-        with zipfile.ZipFile(config.reads) as sanger_zip:
-            ab1_files = [finfo for finfo in sanger_zip.infolist() if finfo.filename.endswith(".ab1")]
-            for sanger_file in ab1_files:
-                sanger_zip.extract(sanger_file, ab1_dir)
+    ab1_dir = _extract_if_zip(tmpdir, config)
 
     sanger_files = glob.glob(os.path.join(ab1_dir, "*.ab1"))
     sanger_files_len = len(sanger_files)
@@ -99,7 +95,16 @@ def basecall(tmpdir, config):
 
 
 def map_reads(tmpdir, config):
-    fastq_dir = os.path.join(tmpdir, "fastqs")
+
+    if config.input_format == "ab1":
+        # fastqs live in the tmpdir
+        sequence_dir = os.path.join(tmpdir, "fastqs")
+        file_ending = "fastq"
+    else:
+        sequence_dir = _extract_if_zip(tmpdir, config)
+        file_ending = config.input_format
+
+
     bam_dir = os.path.join(tmpdir, "bams")
     os.makedirs(bam_dir)
 
@@ -108,7 +113,7 @@ def map_reads(tmpdir, config):
     ref = f"{name}.index"
     stderr = subprocess.DEVNULL if config.quiet else None
 
-    fqs = glob.glob(os.path.join(fastq_dir, "*.fastq"))
+    fqs = glob.glob(os.path.join(sequence_dir, f"*.{file_ending}"))
     fqs_length = len(fqs)
 
     for idx, fastq_file in enumerate(fqs):
@@ -126,6 +131,8 @@ def map_reads(tmpdir, config):
         sam_view_cmd = ["samtools", "view", "-Sb", "-o", "sam_view_result.bam", "-"]
         sam_sort_cmd = ["samtools", "sort", "-o", bam_file, "sam_view_result.bam"]
         bowtie_cmd = ["bowtie2", "-x", ref, "--very-sensitive-local", "-U", fastq_file, "--qc-filter"]
+        if config.input_format == "fasta":
+            bowtie_cmd.append("-f")
         sam_idx_cmd = ["samtools", "index", bam_file]
 
 
@@ -137,6 +144,20 @@ def map_reads(tmpdir, config):
                                     [sam_view_result_file, bam_file, "/wasm/samtools.wasm"], True)
         result = BioLib.call_task(sam_idx_cmd[0], "", sam_idx_cmd[1:],
                                   [bam_file, "/wasm/samtools.wasm", bai_file], True)
+
+
+def _extract_if_zip(tmpdir: str, config: CSCConfig) -> str:
+    """Extract the reads from a zipfile if input is indeed a zip file."""
+    if os.path.isdir(config.reads):
+        return config.reads
+    else:
+        extracted_dir = os.path.join(tmpdir, f"{config.input_format}s")
+        os.makedirs(extracted_dir)
+        with zipfile.ZipFile(config.reads) as zip_file:
+            files = [finfo for finfo in zip_file.infolist() if finfo.filename.endswith(f".{config.input_format}")]
+            for extract_file in files:
+                zip_file.extract(extract_file, extracted_dir)
+        return extracted_dir
 
 
 def check_variants(tmpdir, config):
@@ -195,9 +216,9 @@ def check_variants(tmpdir, config):
                     comment_parts.append(f"possibly found {variant}")
 
             comment += ";".join(comment_parts)
+        if "N501Y" in found_mutations and "E484K" in found_mutations:
+            comment += "important mutations found"
         comment = comment.strip()
-        if not comment:
-            comment = "NA"
 
         parts.append(comment)
 
