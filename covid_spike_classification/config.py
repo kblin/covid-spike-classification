@@ -3,6 +3,7 @@
 class CSCConfig:
     __slots__ = (
         'debug',
+        '_failed',
         'input_format',
         'name_variants',
         'outdir',
@@ -16,7 +17,13 @@ class CSCConfig:
 
     def __init__(self, **kwargs):
         for attr in self.__slots__:
+            # skip internal slots
+            if attr.startswith("_"):
+                continue
             setattr(self, attr, kwargs[attr])
+
+        # set up internal slots
+        self._failed = set()
 
     @classmethod
     def from_args(cls, namespace):

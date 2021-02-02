@@ -114,7 +114,13 @@ def map_reads(tmpdir, config):
             bowtie = subprocess.Popen(bowtie_cmd, stdout=subprocess.PIPE, stderr=stderr)
             sam_view = subprocess.Popen(sam_view_cmd, stdin=bowtie.stdout, stdout=subprocess.PIPE, stderr=stderr)
             sam_sort = subprocess.Popen(sam_sort_cmd, stdin=sam_view.stdout, stdout=handle, stderr=stderr)
-            sam_sort.wait()
+        sam_sort.wait()
+        sam_view.wait()
+        bowtie.wait()
+
+        if bowtie.returncode != 0 or sam_view.returncode != 0 or sam_sort.returncode != 0:
+            config._failed.add(bam_file)
+            continue
 
         subprocess.check_call(sam_idx_cmd, stderr=stderr)
 
@@ -148,6 +154,13 @@ def check_variants(tmpdir, config):
         sample_id = base_name.split(".")[0]
         parts = [sample_id]
         found_mutations = set()
+
+        if bam_file in config._failed:
+            for variant in variants:
+                parts.append("NA")
+            parts.append("read failed to align")
+            print(*parts, sep=",", file=outfile)
+            continue
 
         for variant in variants:
             region = REGIONS[variant]
