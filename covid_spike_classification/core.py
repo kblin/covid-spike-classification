@@ -186,6 +186,8 @@ def check_variants(tmpdir, config):
                     comment_parts.append(f"possibly found {variant}")
 
             comment += ";".join(comment_parts)
+        if "N501Y" in found_mutations and "E484K" in found_mutations:
+            comment += "important mutations found"
         comment = comment.strip()
 
         parts.append(comment)
