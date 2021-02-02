@@ -23,6 +23,8 @@ def main():
                         help="A zip file or directory containing the ab1 files to call variants on.")
     parser.add_argument("-r", "--reference", default=os.path.join(os.getcwd(), "ref", "NC_045512.fasta"),
                         help="Reference FASTA file to use (default: %(default)s).")
+    parser.add_argument("-i", "--input-format", choices=["ab1", "fasta", "fastq"], default="ab1",
+                        help="Select which input format to expect. Choices: %(choices)s. default: %(default)s")
     parser.add_argument("-o", "--outdir",
                         default=datetime.datetime.now().strftime("%Y-%m-%d"),
                         help="File to write result CSV and fastq files to (default: %(default)s).")

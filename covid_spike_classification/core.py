@@ -7,6 +7,8 @@ import subprocess
 import sys
 import zipfile
 
+from .config import CSCConfig
+
 from Bio.Seq import Seq
 
 REGIONS = {
@@ -58,18 +60,12 @@ class BaseDeletedError(RuntimeError):
 
 
 def basecall(tmpdir, config):
+    if config.input_format != "ab1":
+        return
     fastq_dir = os.path.join(tmpdir, "fastqs")
     os.makedirs(fastq_dir)
 
-    if os.path.isdir(config.reads):
-        ab1_dir = config.reads
-    else:
-        ab1_dir = os.path.join(tmpdir, "ab1s")
-        os.makedirs(ab1_dir)
-        with zipfile.ZipFile(config.reads) as sanger_zip:
-            ab1_files = [finfo for finfo in sanger_zip.infolist() if finfo.filename.endswith(".ab1")]
-            for sanger_file in ab1_files:
-                sanger_zip.extract(sanger_file, ab1_dir)
+    ab1_dir = _extract_if_zip(tmpdir, config)
 
     for sanger_file in glob.glob(os.path.join(ab1_dir, "*.ab1")):
         base_name = os.path.basename(sanger_file)
@@ -84,7 +80,16 @@ def basecall(tmpdir, config):
 
 
 def map_reads(tmpdir, config):
-    fastq_dir = os.path.join(tmpdir, "fastqs")
+
+    if config.input_format == "ab1":
+        # fastqs live in the tmpdir
+        sequence_dir = os.path.join(tmpdir, "fastqs")
+        file_ending = "fastq"
+    else:
+        sequence_dir = _extract_if_zip(tmpdir, config)
+        file_ending = config.input_format
+
+
     bam_dir = os.path.join(tmpdir, "bams")
     os.makedirs(bam_dir)
 
@@ -97,10 +102,12 @@ def map_reads(tmpdir, config):
 
     stderr = subprocess.DEVNULL if config.quiet else None
 
-    for fastq_file in glob.glob(os.path.join(fastq_dir, "*.fastq")):
+    for fastq_file in glob.glob(os.path.join(sequence_dir, f"*.{file_ending}")):
         base_name = os.path.basename(fastq_file)
         bam_file = os.path.join(bam_dir, f"{base_name}.bam")
         bowtie_cmd = ["bowtie2", "-x", ref, "--very-sensitive-local", "-U", fastq_file, "--qc-filter"]
+        if config.input_format == "fasta":
+            bowtie_cmd.append("-f")
         sam_idx_cmd = ["samtools", "index", bam_file]
 
         with open(bam_file, "w") as handle:
@@ -110,6 +117,20 @@ def map_reads(tmpdir, config):
             sam_sort.wait()
 
         subprocess.check_call(sam_idx_cmd, stderr=stderr)
+
+
+def _extract_if_zip(tmpdir: str, config: CSCConfig) -> str:
+    """Extract the reads from a zipfile if input is indeed a zip file."""
+    if os.path.isdir(config.reads):
+        return config.reads
+    else:
+        extracted_dir = os.path.join(tmpdir, f"{config.input_format}s")
+        os.makedirs(extracted_dir)
+        with zipfile.ZipFile(config.reads) as zip_file:
+            files = [finfo for finfo in zip_file.infolist() if finfo.filename.endswith(f".{config.input_format}")]
+            for extract_file in files:
+                zip_file.extract(extract_file, extracted_dir)
+        return extracted_dir
 
 
 def check_variants(tmpdir, config):

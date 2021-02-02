@@ -3,6 +3,7 @@
 class CSCConfig:
     __slots__ = (
         'debug',
+        'input_format',
         'name_variants',
         'outdir',
         'quiet',
