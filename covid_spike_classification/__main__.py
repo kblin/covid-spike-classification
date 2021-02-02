@@ -36,7 +36,7 @@ def main():
                         help="Debug mode: Keep bam file around when the parsing crashes")
     parser.add_argument("--show-unexpected", action="store_true", default=False,
                         help="Show unexpected mutations instead of reporting 'no known mutation'")
-    parser.add_argument("-n", "--name-variants", action="store_true", default=False,
+    parser.add_argument("-n", "--name-variants", action="store_false", default=True,
                         help="Add a column naming known variants")
     parser.add_argument("-z", "--zip-results", action="store_true", default=False,
                         help="Create a zipfile from the output directory instead of the output directory.")
