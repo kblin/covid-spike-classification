@@ -7,6 +7,8 @@ Using Sanger-sequenced RT-PCR product of the spike protein, this tool should pic
 mutations currently tracked and give a table with one row per sample and a yes/no/failed column per
 tracked mutation.
 
+This workflow is built and maintained at https://github.com/kblin/covid-spike-classification
+
 ## Installation
 
 For now, `covid-spike-classification` is distributed via this git repository.
