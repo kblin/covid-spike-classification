@@ -187,8 +187,6 @@ def check_variants(tmpdir, config):
 
             comment += ";".join(comment_parts)
         comment = comment.strip()
-        if not comment:
-            comment = "NA"
 
         parts.append(comment)
 
