@@ -76,7 +76,14 @@ def basecall(tmpdir, config):
             kwargs["stderr"] = subprocess.DEVNULL
         subprocess.check_call(cmd, **kwargs)
 
-    shutil.copytree(fastq_dir, config.outdir, dirs_exist_ok=True)
+    # copy all content of fastq_dir to config.outdir
+    for path in os.listdir(fastq_dir):
+        source_path = os.path.join(fastq_dir, path)
+        destination_path = os.path.join(config.outdir, path)
+        if os.path.isdir(source_path):
+            shutil.copytree(source_path, destination_path)
+        else:
+            shutil.copy2(source_path, destination_path)
 
 
 def map_reads(tmpdir, config):
