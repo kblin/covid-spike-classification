@@ -135,13 +135,15 @@ def map_reads(tmpdir, config):
             bowtie_cmd.append("-f")
         sam_idx_cmd = ["samtools", "index", bam_file]
 
-
         bowtie = BioLib.call_task(bowtie_cmd[0], "", bowtie_cmd[1:],
                                   ["/ref", fastq_file, '/wasm/bowtie2-align-s.wasm'], True)
         sam_view = BioLib.call_task(sam_view_cmd[0], bytes(bowtie.stdout), sam_view_cmd[1:],
                                     [sam_view_result_file, '/wasm/samtools.wasm'], True)
         sam_sort = BioLib.call_task(sam_sort_cmd[0], "", sam_sort_cmd[1:],
                                     [sam_view_result_file, bam_file, "/wasm/samtools.wasm"], True)
+        if bowtie.exitcode != 0 or sam_view.exitcode != 0 or sam_sort.exitcode != 0:
+            config._failed.add(bam_file)
+            continue
         result = BioLib.call_task(sam_idx_cmd[0], "", sam_idx_cmd[1:],
                                   [bam_file, "/wasm/samtools.wasm", bai_file], True)
 
@@ -179,6 +181,13 @@ def check_variants(tmpdir, config):
         parts = [sample_id]
         found_mutations = set()
 
+        if bam_file in config._failed:
+            for variant in variants:
+                parts.append("NA")
+            parts.append("read failed to align")
+            print(*parts, sep=",", file=outfile)
+            continue
+
         for variant in variants:
             region = REGIONS[variant]
             try:
@@ -215,9 +224,9 @@ def check_variants(tmpdir, config):
                 else:
                     comment_parts.append(f"possibly found {variant}")
 
-            comment += ";".join(comment_parts)
+            comment += "; ".join(comment_parts)
         if "N501Y" in found_mutations and "E484K" in found_mutations:
-            comment += "important mutations found"
+            comment += "; important mutations found"
         comment = comment.strip()
 
         parts.append(comment)
