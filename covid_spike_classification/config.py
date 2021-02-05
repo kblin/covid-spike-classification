@@ -5,7 +5,6 @@ class CSCConfig:
         'debug',
         '_failed',
         'input_format',
-        'name_variants',
         'outdir',
         'quiet',
         'reads',
