@@ -7,9 +7,10 @@ import subprocess
 import sys
 import zipfile
 
-from .config import CSCConfig
-
+import Bio
 from Bio.Seq import Seq
+
+from .config import CSCConfig
 
 REGIONS = {
     # The important ones the system asks for
@@ -194,8 +195,12 @@ def call_variant(reference, bam_file, region):
     if "*" in after:
         raise BaseDeletedError()
 
-    before_aa = Seq(before).translate()
-    after_aa = Seq(after).translate()
+    try:
+        before_aa = Seq(before).translate()
+        after_aa = Seq(after).translate()
+    except Bio.Data.CodonTable.TranslationError as err:
+        print(bam_file, err, file=sys.stderr)
+        raise
 
     return before_aa, after_aa, quality
 
@@ -213,10 +218,18 @@ def parse_pileup(pileup):
             raise PileupFailedError()
 
         before += parts[2]
-        after += parts[4][0] if parts[4][0] not in (".", ",") else parts[2]
+        after += _parse_after_base(parts[2], parts[4])
         quality.append(ord(parts[5])-33)
 
     return before, after, quality
 
 
-
+def _parse_after_base(before_base, after_chunk):
+    if len(after_chunk) > 1:
+        if after_chunk.startswith("^"):
+            after_chunk = after_chunk[2]
+        else:
+            after_chunk = after_chunk[0]
+    if after_chunk in {".", ","}:
+        return before_base
+    return after_chunk
