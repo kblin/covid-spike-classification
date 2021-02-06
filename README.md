@@ -1,5 +1,7 @@
 # Detect interesting SARS-CoV-2 spike protein variants from Sanger sequencing data
 
+[![install with bioconda](https://img.shields.io/badge/install%20with-bioconda-brightgreen.svg?style=flat)](http://bioconda.github.io/recipes/covid-spike-classification/README.html)
+
 `covid-spike-classification` is a script to call interesting SARS-CoV-2 spike protein variants
 from Sanger sequencing to support the Danish COVID-19 monitoring efforts.
 
