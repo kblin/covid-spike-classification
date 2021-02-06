@@ -213,7 +213,7 @@ def parse_pileup(pileup):
             raise PileupFailedError()
 
         before += parts[2]
-        after += parts[4][0] if parts[4][0] != "." else parts[2]
+        after += parts[4][0] if parts[4][0] not in (".", ",") else parts[2]
         quality.append(ord(parts[5])-33)
 
     return before, after, quality
