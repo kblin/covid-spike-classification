@@ -47,16 +47,19 @@ def basecall(tmpdir, config):
 
     ab1_dir = _extract_if_zip(tmpdir, config)
 
+    os.makedirs(config.outdir, exist_ok=True)
+
     for sanger_file in glob.glob(os.path.join(ab1_dir, "*.ab1")):
         base_name = os.path.basename(sanger_file)
-        cmd = ["tracy", "basecall", "-f", "fastq", "-o", os.path.join(fastq_dir, f"{base_name}.fastq"), sanger_file]
+        fastq_file = f"{base_name}.fastq"
+        cmd = ["tracy", "basecall", "-f", "fastq", "-o", os.path.join(fastq_dir, fastq_file), sanger_file]
         kwargs = {}
         if config.quiet:
             kwargs["stdout"] = subprocess.DEVNULL
             kwargs["stderr"] = subprocess.DEVNULL
         subprocess.check_call(cmd, **kwargs)
 
-    shutil.copytree(fastq_dir, config.outdir, dirs_exist_ok=True)
+        shutil.copy2(os.path.join(fastq_dir, fastq_file), os.path.join(config.outdir, fastq_file))
 
 
 def map_reads(tmpdir, config):
