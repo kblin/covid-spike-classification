@@ -17,9 +17,9 @@ For now, `covid-spike-classification` is distributed via this git repository.
 
 `covid-spike-classification` depends on three excellent tools to do most of the work:
 
-* tracy (version 0.5.3 tested)
+* tracy (versions 0.5.3 & 0.5.7 tested)
 * bowtie2 (version 2.4.2 tested)
-* samtools (version 1.11 tested)
+* samtools (versions 1.10 & 1.11 tested)
 
 If you have `conda` installed, the easiest way to get started is to just install these via calling
 ```sh
