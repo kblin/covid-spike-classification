@@ -1,8 +1,8 @@
-# Detect interesting SARS-CoV-2 spike protein variants from Sanger sequencing data
+# Detect interesting SARS-CoV-2 spike protein mutations from Sanger sequencing data
 
 [![install with bioconda](https://img.shields.io/badge/install%20with-bioconda-brightgreen.svg?style=flat)](http://bioconda.github.io/recipes/covid-spike-classification/README.html)
 
-`covid-spike-classification` is a script to call interesting SARS-CoV-2 spike protein variants
+`covid-spike-classification` is a script to call interesting SARS-CoV-2 spike protein mutations
 from Sanger sequencing to support the Danish COVID-19 monitoring efforts.
 
 Using Sanger-sequenced RT-PCR product of the spike protein, this tool should pick up all relevant
