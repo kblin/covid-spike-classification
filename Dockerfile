@@ -7,10 +7,9 @@ SHELL ["/bin/bash", "--login", "-c"]
 
 
 # Create the environment:
-RUN git clone https://github.com/kblin/covid-spike-classification.git
-COPY covid-spike-classification .
-RUN cd covid-spike-classification
-
+RUN git clone https://github.com/kblin/covid-spike-classification.git 
+COPY covid-spike-classification /home
+WORKDIR covid-spike-classification
 RUN conda env create -n csc -f environment.yml
 RUN conda activate csc
 RUN pip install .
