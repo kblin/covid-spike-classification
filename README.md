@@ -13,7 +13,23 @@ This workflow is built and maintained at https://github.com/kblin/covid-spike-cl
 
 ## Installation
 
-For now, `covid-spike-classification` is distributed via this git repository.
+`covid-spike-classification` is distributed via this git repository, pypi or bioconda.
+
+
+### Bioconda
+
+Installing via bioconda is the fastest way to get up and running:
+
+```sh
+conda create -n csc -c conda-forge -c bioconda covid-spike-classification
+conda activate csc
+```
+
+### git & pypi
+
+
+When installing via git or pypi, you first need to install the external binary dependencies.
+
 
 `covid-spike-classification` depends on three excellent tools to do most of the work:
 
@@ -29,6 +45,8 @@ conda env create -n csc -f environment.yml
 conda activate csc
 pip install .
 ```
+
+## Setup
 
 You also need to generate the samtools and bowtie2 indices for your reference genome. We ship a
 copy of NC\_045512 and a script to generate these indices:
