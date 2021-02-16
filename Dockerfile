@@ -23,6 +23,6 @@ RUN echo "conda activate csc" > ~/.bashrc
 
 
 
-ENV PATH /miniconda/envs/pangolin/bin:$PATH
+ENV PATH /miniconda/envs/csc/bin:$PATH
 
 
