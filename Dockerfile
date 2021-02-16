@@ -8,7 +8,6 @@ SHELL ["/bin/bash", "--login", "-c"]
 
 # Create the environment:
 RUN git clone https://github.com/kblin/covid-spike-classification.git covid-spike-classification
-RUN ls && pwd
 
 RUN conda env create -n csc -f covid-spike-classification/environment.yml
 RUN conda activate csc
@@ -23,6 +22,3 @@ RUN conda init bash
 RUN echo "conda activate csc" > ~/.bashrc
 
 
-
-
-# The code to run when container is started:
