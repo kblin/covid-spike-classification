@@ -90,7 +90,7 @@ def map_reads(tmpdir, config):
     ref = f"{name}.index"
 
     sam_view_cmd = ["samtools", "view", "-Sb", "-"]
-    sam_sort_cmd = ["samtools", "sort", "-"]
+    sam_sort_cmd = ["samtools", "sort", "-m", "64M", "-"]
 
     stderr = subprocess.DEVNULL if config.quiet else None
 
