@@ -31,6 +31,11 @@ REGIONS = {
     "T716I": "NC_045512:23708-23710",
 }
 
+IMPORTANT_MUTATIONS = {
+    "E484K",
+    "N501Y",
+}
+
 
 class PileupFailedError(RuntimeError):
     pass
@@ -173,10 +178,10 @@ def check_variants(tmpdir, config):
         comment_parts = []
         if "D614G" not in found_mutations:
             comment_parts.append("D614G not found; low quality sequence?")
-        if "N501Y" in found_mutations:
-            comment_parts.append("N501Y found")
-        if "E484K" in found_mutations:
-            comment_parts.append("E484K found")
+
+        for mut in IMPORTANT_MUTATIONS:
+            if mut in found_mutations:
+                comment_parts.append(f"{mut} found")
         comment = "; ".join(comment_parts)
 
         parts.append(comment)
