@@ -20,9 +20,11 @@ RUN conda init bash
 
 # Activate the environment, and make sure it's activated:
 RUN echo "conda activate csc" > ~/.bashrc
+RUN which tracy
+#RUN ls ~/miniconda3
 
 
+ENV PATH /opt/conda/envs/csc/bin:$PATH
 
-ENV PATH /miniconda/envs/csc/bin:$PATH
 
 
