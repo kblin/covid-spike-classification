@@ -58,7 +58,7 @@ def basecall(tmpdir, config):
 
     os.makedirs(config.outdir, exist_ok=True)
 
-    for sanger_file in glob.glob(os.path.join(ab1_dir, "*.ab1")):
+    for sanger_file in glob.glob(os.path.join(ab1_dir, "**", "*.ab1"), recursive=True):
         base_name = os.path.basename(sanger_file)
         fastq_file = f"{base_name}.fastq"
         cmd = ["tracy", "basecall", "-f", "fastq", "-o", os.path.join(fastq_dir, fastq_file), sanger_file]
