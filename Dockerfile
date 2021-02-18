@@ -14,7 +14,7 @@ SHELL ["/bin/bash", "--login", "-c"]
 RUN git clone https://github.com/kblin/covid-spike-classification.git covid-spike-classification
 
 
-RUN cd covid-spike-classification && HASH_COMMIT=$(git rev-parse HEAD) && echo HASH_COMMIT && cd ..
+RUN cd covid-spike-classification && HASH_COMMIT=$(git rev-parse HEAD) && echo $HASH_COMMIT && cd ..
 LABEL HASH_COMMIT=$HASH_COMMIT
 
 
