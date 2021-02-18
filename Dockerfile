@@ -16,7 +16,6 @@ RUN git clone https://github.com/kblin/covid-spike-classification.git covid-spik
 RUN conda env create -n csc -f covid-spike-classification/environment.yml
 RUN conda activate csc
 RUN pip install covid-spike-classification
-RUN echo
 
 
 # Initialize conda in bash config files:
