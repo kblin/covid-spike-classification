@@ -23,12 +23,20 @@ REGIONS = {
     "L452R": "NC_045512:22916-22918",
     "S477N": "NC_045512:22991-22993",
     "A570D": "NC_045512:23270-23272",
+    "Q613H": "NC_045512:23399-23401",
     "D614G": "NC_045512:23402-23404",
     "A626S": "NC_045512:23438-23441",
     "H655Y": "NC_045512:23525-23527",
+    "Q677H": "NC_045512:23591-23593",
+    "P681R": "NC_045512:23603-23605",
     "I692V": "NC_045512:23636-23638",
     "A701V": "NC_045512:23663-23665",
     "T716I": "NC_045512:23708-23710",
+}
+
+IMPORTANT_MUTATIONS = {
+    "E484K",
+    "N501Y",
 }
 
 
@@ -50,7 +58,7 @@ def basecall(tmpdir, config):
 
     os.makedirs(config.outdir, exist_ok=True)
 
-    for sanger_file in glob.glob(os.path.join(ab1_dir, "*.ab1")):
+    for sanger_file in glob.glob(os.path.join(ab1_dir, "**", "*.ab1"), recursive=True):
         base_name = os.path.basename(sanger_file)
         fastq_file = f"{base_name}.fastq"
         cmd = ["tracy", "basecall", "-f", "fastq", "-o", os.path.join(fastq_dir, fastq_file), sanger_file]
@@ -82,7 +90,7 @@ def map_reads(tmpdir, config):
     ref = f"{name}.index"
 
     sam_view_cmd = ["samtools", "view", "-Sb", "-"]
-    sam_sort_cmd = ["samtools", "sort", "-"]
+    sam_sort_cmd = ["samtools", "sort", "-m", "64M", "-"]
 
     stderr = subprocess.DEVNULL if config.quiet else None
 
@@ -173,10 +181,10 @@ def check_variants(tmpdir, config):
         comment_parts = []
         if "D614G" not in found_mutations:
             comment_parts.append("D614G not found; low quality sequence?")
-        if "N501Y" in found_mutations:
-            comment_parts.append("N501Y found")
-        if "E484K" in found_mutations:
-            comment_parts.append("E484K found")
+
+        for mut in IMPORTANT_MUTATIONS:
+            if mut in found_mutations:
+                comment_parts.append(f"{mut} found")
         comment = "; ".join(comment_parts)
 
         parts.append(comment)
