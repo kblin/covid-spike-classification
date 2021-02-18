@@ -13,8 +13,10 @@ SHELL ["/bin/bash", "--login", "-c"]
 # Create the environment:
 RUN git clone https://github.com/kblin/covid-spike-classification.git covid-spike-classification
 
-LABEL HASH_COMMIT=$(git rev-parse HEAD)
-RUN echo $HASH_COMMIT
+
+RUN cd covid-spike-classification && HASH_COMMIT=$(git rev-parse HEAD) && echo HASH_COMMIT && cd ..
+LABEL HASH_COMMIT=$HASH_COMMIT
+
 
 RUN cd covid-spike-classification/ && git log | head && cd ..
 
