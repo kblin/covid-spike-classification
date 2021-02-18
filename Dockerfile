@@ -12,10 +12,11 @@ SHELL ["/bin/bash", "--login", "-c"]
 
 # Create the environment:
 RUN git clone https://github.com/kblin/covid-spike-classification.git covid-spike-classification
+RUN cd covid-spike-classification/ && git log | head && cd ..
 
 RUN conda env create -n csc -f covid-spike-classification/environment.yml
 RUN conda activate csc
-RUN pip install covid-spike-classification
+RUN cd covid-spike-classification && pip install covid-spike-classification && cd ..
 
 
 # Initialize conda in bash config files:
