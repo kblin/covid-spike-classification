@@ -10,7 +10,7 @@ def test_parse_pileup_match():
 NC_045512	22920	A	1	.	E
 NC_045512	22921	T	1	.	O
 """
-    expected = ("TAT", "TAT", [38, 36, 46])
+    expected = ("TAT", "TAT", [(38, False), (36, False), (46, False)])
     assert expected == core.parse_pileup(pileup)
 
 
@@ -19,7 +19,7 @@ def test_parse_pileup_mismatch():
 NC_045512	22920	A	1	G	E
 NC_045512	22921	T	1	.	O
 """
-    expected = ("TAT", "TGT", [38, 36, 46])
+    expected = ("TAT", "TGT", [(38, False), (36, True), (46, False)])
     assert expected == core.parse_pileup(pileup)
 
 
@@ -28,7 +28,7 @@ def test_parse_pileup_deletion_end():
 NC_045512	22920	A	1	.	E
 NC_045512	22921	T	1	.*G	O
 """
-    expected = ("TAT", "TAT", [38, 36, 46])
+    expected = ("TAT", "TAT", [(38, False), (36, False), (46, False)])
     assert expected == core.parse_pileup(pileup)
 
 
@@ -37,7 +37,7 @@ def test_parse_pileup_read_start():
 NC_045512	22920	A	1	.	E
 NC_045512	22921	T	1	.	O
 """
-    expected = ("TAT", "TAT", [38, 36, 46])
+    expected = ("TAT", "TAT", [(38, False), (36, False), (46, False)])
     assert expected == core.parse_pileup(pileup)
 
 

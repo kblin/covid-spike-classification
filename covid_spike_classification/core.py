@@ -34,11 +34,6 @@ REGIONS = {
     "T716I": "NC_045512:23708-23710",
 }
 
-IMPORTANT_MUTATIONS = {
-    "E484K",
-    "N501Y",
-}
-
 
 class PileupFailedError(RuntimeError):
     pass
@@ -146,6 +141,7 @@ def check_variants(tmpdir, config):
         sample_id = base_name.split(".")[0]
         parts = [sample_id]
         found_mutations = set()
+        probabilities = {}
 
         if bam_file in config._failed:
             for variant in variants:
@@ -159,8 +155,14 @@ def check_variants(tmpdir, config):
             try:
                 before, after, quality = call_variant(config.reference, bam_file, region)
                 if before == after:
+                    score = min([q[0] for q in quality])
+                    probabilities[variant] = _score_to_ratio(score)
                     parts.append("0")
                 elif after == variant[-1]:
+                    for q, mod in quality:
+                        if mod:
+                            probabilities[variant] = _score_to_ratio(q)
+                            break
                     parts.append("1")
                     found_mutations.add(variant)
                 else:
@@ -180,11 +182,14 @@ def check_variants(tmpdir, config):
 
         comment_parts = []
         if "D614G" not in found_mutations:
-            comment_parts.append("D614G not found; low quality sequence?")
+            comment_parts.append(f"D614G not found; low quality sequence ({probabilities.get('D614G', 'failed to map')})?")
 
-        for mut in IMPORTANT_MUTATIONS:
-            if mut in found_mutations:
-                comment_parts.append(f"{mut} found")
+        for mut in variants:
+            if mut not in found_mutations:
+                continue
+            if mut == "D614G":
+                continue
+            comment_parts.append(f"{mut} found ({probabilities[mut]})")
         comment = "; ".join(comment_parts)
 
         parts.append(comment)
@@ -226,8 +231,13 @@ def parse_pileup(pileup):
             raise PileupFailedError()
 
         before += parts[2]
-        after += _parse_after_base(parts[2], parts[4])
-        quality.append(ord(parts[5])-33)
+        after_base = _parse_after_base(parts[2], parts[4])
+        after += after_base
+        quality_score = ord(parts[5]) - 33
+        if parts[2] == after_base:
+            quality.append((quality_score, False))
+        else:
+            quality.append((quality_score, True))
 
     return before, after, quality
 
@@ -241,3 +251,18 @@ def _parse_after_base(before_base, after_chunk):
     if after_chunk in {".", ","}:
         return before_base
     return after_chunk
+
+
+def _score_to_ratio(phredscore):
+    p = 10**(phredscore/10 * -1)
+    exponent = 1
+    while p * 10**exponent < 1:
+        exponent += 1
+
+    base = p * 10**exponent
+    if base > 1:
+        exponent -= 1
+        base = round(p * 10**exponent, exponent)
+
+    r = round((1 / base) * 10**exponent)
+    return f"1:{r:,}".replace(",", ".")
