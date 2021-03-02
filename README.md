@@ -47,6 +47,16 @@ conda activate csc
 pip install .
 ```
 
+### Docker, Podman, Singularity
+
+While not technically an installation method, `covid-spike-classification` is also shipped as an OCI container.
+To use it, you ideally run the container from a workflow management system like [Snakemake](https://snakemake.github.io/)
+or [Nextflow](https://www.nextflow.io/) that will take care of mounting filesystems into the container for you.
+
+The OCI container image is available from the Docker Hub [`kblin/covid-spike-classification`](https://hub.docker.com/r/kblin/covid-spike-classification)
+repository.
+
+
 ## Setup
 
 You also need to generate the samtools and bowtie2 indices for your reference genome. We ship a
