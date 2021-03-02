@@ -7,8 +7,9 @@
 from Sanger sequencing to support the Danish COVID-19 monitoring efforts.
 
 Using Sanger-sequenced RT-PCR product of the spike protein, this tool should pick up all relevant
-mutations currently tracked and give a table with one row per sample and a yes/no/failed column per
-tracked mutation.
+mutations currently tracked (see [`covid_spike_classification/core.p`](https://github.com/kblin/covid-spike-classification/blob/main/covid_spike_classification/core.py#L15-L35)
+for the full list of tracked mutations) and give a table with one row per sample and a
+yes/no/failed column per tracked mutation.
 
 This workflow is built and maintained at https://github.com/kblin/covid-spike-classification
 
