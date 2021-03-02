@@ -1,5 +1,6 @@
 """Manage configuration options."""
 
+
 class CSCConfig:
     __slots__ = (
         'debug',

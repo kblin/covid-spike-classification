@@ -4,13 +4,11 @@ import argparse
 import datetime
 import os
 import shutil
-import sys
 import tempfile
 
 from .config import CSCConfig
 
 from .core import (
-    REGIONS,
     basecall,
     map_reads,
     check_variants
@@ -54,6 +52,7 @@ def main():
         if config.zip_results:
             shutil.make_archive(config.outdir, "zip", root_dir=config.outdir)
             shutil.rmtree(config.outdir, ignore_errors=True)
+
 
 if __name__ == "__main__":
     main()

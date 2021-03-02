@@ -15,7 +15,8 @@ install_requires = [
 ]
 
 tests_require = [
-    'pytest'
+    'flake8',
+    'pytest',
 ]
 
 

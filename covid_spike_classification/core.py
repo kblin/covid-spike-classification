@@ -76,7 +76,6 @@ def map_reads(tmpdir, config):
         sequence_dir = _extract_if_zip(tmpdir, config)
         file_ending = config.input_format
 
-
     bam_dir = os.path.join(tmpdir, "bams")
     os.makedirs(bam_dir)
 
@@ -174,7 +173,7 @@ def check_variants(tmpdir, config):
                 parts.append("NA")
             except BaseDeletedError:
                 parts.append("NA")
-            except:
+            except Exception:
                 if config.debug:
                     shutil.copy2(bam_file, "keep")
                     print(bam_file, variant)
@@ -182,7 +181,8 @@ def check_variants(tmpdir, config):
 
         comment_parts = []
         if "D614G" not in found_mutations:
-            comment_parts.append(f"D614G not found; low quality sequence ({probabilities.get('D614G', 'failed to map')})?")
+            comment_parts.append(
+                    f"D614G not found; low quality sequence ({probabilities.get('D614G', 'failed to map')})?")
 
         for mut in variants:
             if mut not in found_mutations:
