@@ -265,4 +265,4 @@ def _score_to_ratio(phredscore):
         base = round(p * 10**exponent, exponent)
 
     r = round((1 / base) * 10**exponent)
-    return f"1:{r:,}".replace(",", ".")
+    return f"1:{r:,}".replace(",", " ")
