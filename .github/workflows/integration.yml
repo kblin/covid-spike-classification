@@ -21,7 +21,12 @@ jobs:
       run: |
         conda activate test
         pip install .[testing]
-    - name: Test with pytest
+    - name: Run the integration test
       run: |
+        conda activate test
+        tracy --version
+        bowtie2 --version
+        samtools --version
+        covid-spike-classification -s --silence-warnings tests/data
         pytest --override-ini='python_files=integration_*.py' --override-ini='python_functions=integration_*'
 
