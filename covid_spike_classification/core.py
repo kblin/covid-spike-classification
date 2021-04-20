@@ -191,8 +191,6 @@ def check_variants(tmpdir, config):
         for mut in variants:
             if mut not in found_mutations:
                 continue
-            if mut == "D614G":
-                continue
             comment_parts.append(f"{mut} found ({probabilities[mut]})")
         comment = "; ".join(comment_parts)
 
