@@ -34,6 +34,8 @@ def main():
                         help="Debug mode: Keep bam file around when the parsing crashes")
     parser.add_argument("--show-unexpected", action="store_true", default=False,
                         help="Show unexpected mutations instead of reporting 'no known mutation'")
+    parser.add_argument("--silence-warnings", action="store_true", default=False,
+                        help="Silence D614G warnings.")
     parser.add_argument("-z", "--zip-results", action="store_true", default=False,
                         help="Create a zipfile from the output directory instead of the output directory.")
     args = parser.parse_args()

@@ -11,6 +11,7 @@ class CSCConfig:
         'reads',
         'reference',
         'show_unexpected',
+        'silence_warnings',
         'stdout',
         'zip_results',
     )

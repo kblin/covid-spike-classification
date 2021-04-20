@@ -184,7 +184,7 @@ def check_variants(tmpdir, config):
                 raise
 
         comment_parts = []
-        if "D614G" not in found_mutations:
+        if "D614G" not in found_mutations and not config.silence_warnings:
             comment_parts.append(
                     f"D614G not found; low quality sequence ({probabilities.get('D614G', 'failed to map')})?")
 
