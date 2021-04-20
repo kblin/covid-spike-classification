@@ -14,12 +14,17 @@ jobs:
       uses: actions/setup-python@v1
       with:
         python-version: '3.x'
+    - name: Set up conda
+      run: bash
+        conda init bash
     - name: Install dependencies
-      run: bash -l {0}
+      run: bash
+        source ~/.bashrc
         conda env create -n csc -f environment.yml
         conda activate csc
         pip install .[testing]
     - name: Test with pytest
-      run: bash -l {0}
+      run: bash
+        source ~/.bashrc
         pytest --override-ini='python_files=integration_*.py' --override-ini='python_functions=integration_*'
 
