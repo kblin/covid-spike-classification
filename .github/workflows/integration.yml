@@ -27,7 +27,7 @@ jobs:
         tracy --version
         bowtie2 --version
         samtools --version
-        ls tests/data
+        (cd ref && ./build_indices.sh)
         covid-spike-classification -s --silence-warnings -i fasta tests/data
         pytest --override-ini='python_files=integration_*.py' --override-ini='python_functions=integration_*'
 
