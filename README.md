@@ -13,6 +13,8 @@ yes/no/failed column per tracked mutation.
 
 This workflow is built and maintained at https://github.com/kblin/covid-spike-classification
 
+If you found this tool useful, please cite https://www.medrxiv.org/content/10.1101/2021.03.27.21252266v1
+
 ## Installation
 
 `covid-spike-classification` is distributed via this git repository, pypi or bioconda.
