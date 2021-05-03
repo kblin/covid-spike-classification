@@ -54,4 +54,6 @@ generate I692V 23636:G
 generate A701V 23664:T
 #T716I
 generate T716I 23709:T
+#T732A
+generate T732A 23756:G
 
