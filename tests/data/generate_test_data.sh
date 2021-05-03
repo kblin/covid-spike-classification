@@ -12,6 +12,8 @@ rm -f *.fasta
 
 #K417N
 generate K417N 22813:C
+#K417T
+generate K417T 22812:C
 #N439K
 generate N439K 22879:A
 #L452R
