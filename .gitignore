@@ -5,3 +5,5 @@ covid_spike_classification.egg-info/*
 changes.txt
 build/*
 dist/*
+deleteme/*
+.vim/*
