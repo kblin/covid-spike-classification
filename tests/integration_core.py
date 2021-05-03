@@ -7,6 +7,7 @@ import shutil
 import subprocess
 import tempfile
 
+
 def integration_run(tmp_path):
     datadir = pathlib.Path(__file__).parent / "data"
     cmd = [
