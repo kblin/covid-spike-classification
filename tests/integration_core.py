@@ -26,6 +26,7 @@ def integration_run(tmp_path):
     assert len(outs) > 0, "command generated no output"
     csv_handle = io.StringIO(outs.decode("utf-8"))
     reader = csv.DictReader(csv_handle)
+    seen_mutations = set()
     for row in reader:
         sample = row['sample']
         comment = row['comment']
@@ -36,10 +37,18 @@ def integration_run(tmp_path):
             if key == sample:
                 assert row[key] == "1", f"Failed to find {sample}"
                 sample_found = True
+                seen_mutations.add(key)
             else:
                 assert row[key] == "0", f"Erroneously found {key} in {sample}: {row}"
         assert f"{sample} found" in comment, f"Missing '{sample} found' from {comment!r}"
         assert sample_found, f"Failed to find {sample} in {row}"
+
+    expected_mutations = set(reader._fieldnames)
+    expected_mutations.remove("sample")
+    expected_mutations.remove("comment")
+
+    missed_mutatations = expected_mutations.difference(seen_mutations)
+    assert len(missed_mutatations) == 0, f"No tests for mutations: {missed_mutatations}"
 
 
 if __name__ == "__main__":
