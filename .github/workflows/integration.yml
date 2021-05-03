@@ -28,5 +28,4 @@ jobs:
         bowtie2 --version
         samtools --version
         (cd ref && ./build_indices.sh)
-        pytest --override-ini='python_files=integration_*.py' --override-ini='python_functions=integration_*'
-
+        make integration
