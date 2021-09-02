@@ -1,14 +1,14 @@
 #!/bin/bash
 # Generate test data for the integration tests
 
-GENERATOR="$(dirname $0)/generate_mutations.py"
+GENERATOR="$(dirname "$0")/generate_mutations.py"
 
 
 function generate {
-    $GENERATOR $1 $2 > "${1}.fasta"
+    $GENERATOR "$1" "$2" > "${1}.fasta"
 }
 
-rm -f *.fasta
+rm -f -- *.fasta
 
 #K417N
 generate K417N 22813:C
