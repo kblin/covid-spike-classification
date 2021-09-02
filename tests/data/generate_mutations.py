@@ -63,14 +63,14 @@ def run(reference, start, end, mutations, name):
     for mutation in mutations:
         seq = mutate(seq, mutation)
 
-    amplicon = SeqRecord.SeqRecord(Seq.Seq(seq[start-1:end]), id=name, name=name, description="")
+    amplicon = SeqRecord.SeqRecord(Seq.Seq(seq[start - 1:end]), id=name, name=name, description="")
     SeqIO.write([amplicon], sys.stdout, "fasta")
 
 
 def mutate(seq: str, mutation: Mutation) -> str:
     """Mutate the base at a position given position in seq to another base"""
     before = seq[:mutation.position]
-    after = seq[mutation.position+1:]
+    after = seq[mutation.position + 1:]
 
     return before + mutation.new_base + after
 

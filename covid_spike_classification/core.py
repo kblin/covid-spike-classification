@@ -187,7 +187,7 @@ def check_variants(tmpdir, config):
         comment_parts = []
         if "D614G" not in found_mutations and not config.silence_warnings:
             comment_parts.append(
-                    f"D614G not found; low quality sequence ({probabilities.get('D614G', 'failed to map')})?")
+                f"D614G not found; low quality sequence ({probabilities.get('D614G', 'failed to map')})?")
 
         for mut in variants:
             if mut not in found_mutations:
@@ -257,7 +257,7 @@ def _parse_after_base(before_base, after_chunk):
 
 
 def _score_to_ratio(phredscore):
-    p = 10**(phredscore/10 * -1)
+    p = 10**(phredscore / 10 * -1)
     exponent = 1
     while p * 10**exponent < 1:
         exponent += 1
