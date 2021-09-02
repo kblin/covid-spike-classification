@@ -16,6 +16,8 @@ generate K417N 22813:C
 generate K417T 22812:C
 #N439K
 generate N439K 22879:A
+#Y449H
+generate Y449H 22907:C
 #L452R
 generate L452R 22917:G
 #Y453F
