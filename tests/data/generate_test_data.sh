@@ -34,6 +34,8 @@ generate S477N 22992:A
 generate T478K 22995:A
 #T478R
 generate T478R 22995:G
+#E484A
+generate E484A 23013:C
 #E484K
 generate E484K 23012:A
 #E484Q
