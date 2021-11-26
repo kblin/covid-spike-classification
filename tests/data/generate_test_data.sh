@@ -46,6 +46,8 @@ generate F490R 23030:C 23031:G
 generate Q493K 23039:A
 #G496S
 generate G496S 23048:A
+#Q498R
+generate Q498R 23055:G
 #N501Y
 generate N501Y 23063:T
 #A570D
