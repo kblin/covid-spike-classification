@@ -66,6 +66,8 @@ generate A626S 23438:T
 generate H655Y 23525:T
 #Q677H
 generate Q677H 23593:C
+#N679K
+generate N679K 23599:A
 #P681H
 generate P681H 23604:A
 #P681R
