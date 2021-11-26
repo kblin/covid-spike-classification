@@ -52,6 +52,8 @@ generate Q498R 23055:G
 generate N501Y 23063:T
 #Y505H
 generate Y505H 23075:C
+#T547K
+generate T547K 23202:A
 #A570D
 generate A570D 23271:A
 #Q613H
