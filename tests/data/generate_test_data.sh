@@ -50,6 +50,8 @@ generate G496S 23048:A
 generate Q498R 23055:G
 #N501Y
 generate N501Y 23063:T
+#Y505H
+generate Y505H 23075:C
 #A570D
 generate A570D 23271:A
 #Q613H
