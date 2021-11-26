@@ -22,6 +22,8 @@ generate N440K 22882:A
 generate G446S 22898:A
 #Y449H
 generate Y449H 22907:C
+#Y449N
+generate Y449N 22907:A
 #L452R
 generate L452R 22917:G
 #Y453F
