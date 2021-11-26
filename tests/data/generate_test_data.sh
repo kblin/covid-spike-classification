@@ -18,6 +18,8 @@ generate K417T 22812:C
 generate N439K 22879:A
 #N440K
 generate N440K 22882:A
+#G446S
+generate G446S 22898:A
 #Y449H
 generate Y449H 22907:C
 #L452R
