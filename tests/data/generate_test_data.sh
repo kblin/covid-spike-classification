@@ -44,6 +44,8 @@ generate E484Q 23012:C
 generate F490R 23030:C 23031:G
 #Q493K
 generate Q493K 23039:A
+#Q493R
+generate Q493R 23040:G
 #G496S
 generate G496S 23048:A
 #Q498R
@@ -80,4 +82,3 @@ generate A701V 23664:T
 generate T716I 23709:T
 #T732A
 generate T732A 23756:G
-
