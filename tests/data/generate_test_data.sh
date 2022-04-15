@@ -82,6 +82,8 @@ generate P681R 23604:G
 generate I692V 23636:G
 #A701V
 generate A701V 23664:T
+#S704L
+generate S704L 23673:T
 #T716I
 generate T716I 23709:T
 #T732A
