@@ -70,6 +70,8 @@ generate D614G 23403:G
 generate A626S 23438:T
 #H655Y
 generate H655Y 23525:T
+#Q677E
+generate Q677E 23591:G
 #Q677H
 generate Q677H 23593:C
 #N679K
