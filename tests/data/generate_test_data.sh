@@ -40,6 +40,8 @@ generate E484A 23013:C
 generate E484K 23012:A
 #E484Q
 generate E484Q 23012:C
+#F486V
+generate F486V 23018:G
 #F490R
 generate F490R 23030:C 23031:G
 #Q493K
